@@ -8,7 +8,12 @@ import java.util.List;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -34,28 +39,39 @@ public class MainActivity extends AppCompatActivity {
         itemList.add(new Item(String.valueOf(R.drawable.burger), "Rotis and Curries","15"));
         MyAdapter adapter = new MyAdapter(itemList);
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(new MyAdapter.OnItemClickListener(){
-            public void onItemClick(int position) {
-                int[] cartLocation = new int[2];
-                cart.getLocationOnScreen(cartLocation);
-                RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-                if (viewHolder instanceof MyAdapter.ViewHolder) {
-                    ImageView doraemonImage = ((MyAdapter.ViewHolder) viewHolder).doraemonImage;
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                    // Calculate the translation values for the animation
-                    float translateX = cartLocation[0] - doraemonImage.getLeft();
-                    float translateY = cartLocation[1] - doraemonImage.getTop();
+            }
 
-                    // Start an ObjectAnimator to move Doraemon to the cart image position
-                    ObjectAnimator moveX = ObjectAnimator.ofFloat(doraemonImage, "translationX", translateX);
-                    ObjectAnimator moveY = ObjectAnimator.ofFloat(doraemonImage, "translationY", translateY);
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String query = charSequence.toString().toLowerCase();
+                List<Item> filteredList = new ArrayList<>();
 
-                    AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.playTogether(moveX, moveY);
-                    animatorSet.setDuration(1000); // Set the duration as per your animation
-                    animatorSet.start();
+                for (Item item : itemList) {
+                    if (item.getName().toLowerCase().contains(query)) {
+                        filteredList.add(item);
+                    }
+
                 }
+                adapter.filterList(filteredList);
+            }
+                @Override
+                public void afterTextChanged(Editable editable) {
+                }
+            });
+        cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Item> cartItems = MyAdapter.getCartItems();
+                Intent intent = new Intent((MainActivity.this), CartActivity.class);
+                intent.putParcelableArrayListExtra("cartItems", (ArrayList<? extends Parcelable>) cartItems);
+                startActivity(intent);
+
             }
         });
-            }
-        }
+
+    }
+}

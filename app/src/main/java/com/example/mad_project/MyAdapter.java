@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -17,46 +19,40 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
 {
     private List<Item> itemList;
-    private static OnItemClickListener onItemClickListener;
+    private static List<Item> cartItems = new ArrayList<>();
     public MyAdapter(List<Item> itemList) {
         this.itemList = itemList;
     }
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
 
-    // Method to set click listener
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
-    }
     public static class ViewHolder extends RecyclerView.ViewHolder{
         ImageView itemImage;
         TextView itemName;
         TextView itemPrice;
         Button addToCartButton;
-        ImageView doraemonImage;
+
         public ViewHolder(View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_image);
             itemName = itemView.findViewById(R.id.item_name);
             itemPrice = itemView.findViewById(R.id.item_price);
             addToCartButton = itemView.findViewById(R.id.add_to_cart_button);
-            doraemonImage = itemView.findViewById(R.id.doraemon_image);
+
             addToCartButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    doraemonImage.setVisibility(View.VISIBLE);
-                    addToCartButton.setVisibility(View.INVISIBLE);
-                }
-            });
-            doraemonImage.setOnClickListener(v -> {
-                if (onItemClickListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        onItemClickListener.onItemClick(position);
-                    }
+                        // Get the clicked item
+                        Item item = cartItems.get(position);
+
+                        // Add the item to the cart
+                        cartItems.add(item);
+                        addToCartButton.setVisibility(View.INVISIBLE);}
+
+
                 }
             });
+
         }
     }
 
@@ -74,25 +70,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
         holder.itemName.setText(currentItem.getName());
         holder.itemPrice.setText("Price: $" + currentItem.getPrice());
 
-        // Handling Doraemon animation and adding to cart
-        holder.doraemonImage.setOnClickListener(v -> {
-            Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.anim.doraemon_animation);
-            holder.doraemonImage.startAnimation(animation);
-
-
-        });
-
 
 
     }
+    public void filterList(List<Item> filteredList){
+        itemList = filteredList;
+        notifyDataSetChanged();
 
-
-
-
-
-
-    @Override
+    }
     public int getItemCount() {
         return itemList.size();
+    }
+    public static List<Item> getCartItems(){
+        return cartItems;
     }
 }

@@ -33,18 +33,13 @@
             android:text="Price: $10"
             android:textSize="16sp" />
 
-        <ImageView
-            android:id="@+id/doraemon_image"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:src="@drawable/doraemon"
-            android:visibility="invisible" />
+
 
         <Button
             android:id="@+id/add_to_cart_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add to Cart" />
+            android:layout_width="81dp"
+            android:layout_height="73dp"
+            android:text="Add" />
 
     </LinearLayout>
 
